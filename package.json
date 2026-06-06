@@ -7,6 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "db:init": "node server/db/init.js"
+    "start": "node server/dev.js",
+    "postinstall": "npm run build",
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.2.1",
