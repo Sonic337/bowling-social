@@ -32,11 +32,17 @@ export default function SignIn() {
     }
   }
 
+  function continueAsGuest() {
+    localStorage.setItem('guest_ok', '1');
+    nav('/');
+  }
+
   return (
     <div className="auth-page">
       <div className="auth-card">
         <img src={logo} alt="The Bowling Circle" className="auth-logo" />
         <h1>Welcome Back</h1>
+        <p className="auth-sub">Meet new people in Pune over a game of bowling.</p>
         <form onSubmit={handleSubmit}>
           <div className="field">
             <label>Email</label>
@@ -47,10 +53,14 @@ export default function SignIn() {
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
           {error && <p className="form-error">{error}</p>}
-          <button className="btn btn-primary" type="submit" disabled={loading}>
+          <button className="btn btn-primary" type="submit" disabled={loading} style={{ width: '100%' }}>
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
+        <div className="auth-divider"><span>or</span></div>
+        <button className="btn btn-ghost" onClick={continueAsGuest} style={{ width: '100%' }}>
+          Continue without signing in →
+        </button>
         <p className="auth-link">No account? <Link to="/signup">Sign up</Link></p>
       </div>
     </div>

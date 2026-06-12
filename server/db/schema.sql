@@ -14,13 +14,21 @@ CREATE TABLE IF NOT EXISTS users (
   gender        VARCHAR(50)   NOT NULL,
   area          VARCHAR(255)  NOT NULL,
   whatsapp      VARCHAR(30)   NOT NULL,
+  email         VARCHAR(255),
   occupation    TEXT,
   interests     TEXT,
   availability  JSONB         DEFAULT '{}',
   group_size_pref VARCHAR(20),
   bio           TEXT,
+  edit_key      VARCHAR(64),
   created_at    TIMESTAMPTZ   DEFAULT NOW()
 );
+
+-- Migrations for existing databases (no-ops on fresh installs)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS edit_key VARCHAR(64);
+
+CREATE UNIQUE INDEX IF NOT EXISTS users_email_unique ON users (LOWER(email)) WHERE email IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS sessions (
   id          SERIAL PRIMARY KEY,

@@ -1,6 +1,6 @@
 # Bowling Social
 
-Admin-operated platform for organizing bowling sessions among strangers in Mumbai.
+Admin-operated platform for organizing bowling sessions among strangers in Pune.
 
 ## Stack
 

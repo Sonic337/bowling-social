@@ -329,3 +329,80 @@ input[type="checkbox"] {
   background: #ef444415;
   border-radius: 6px;
 }
+
+/* ── v2 additions: guest flow + form redesign ── */
+.auth-sub {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: -16px 0 20px;
+}
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  color: var(--text-faint);
+  font-size: 12px;
+}
+.auth-divider::before, .auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.btn-ghost {
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--text);
+  font-weight: 500;
+}
+.btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+
+.hero { text-align: left; margin-bottom: 20px; }
+.hero h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+.hero p { color: var(--text-muted); font-size: 14px; }
+
+.form-section { margin-bottom: 16px; }
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.field-hint { display: block; font-size: 12px; color: var(--text-faint); margin-top: 4px; }
+
+.pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.pill {
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 13px;
+  text-transform: capitalize;
+  cursor: pointer;
+  transition: all .12s;
+  color: var(--text);
+}
+.pill:hover { border-color: var(--primary); }
+.pill.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn-lg { padding: 13px; font-size: 15px; font-weight: 600; border-radius: var(--radius); }
+.success-icon { font-size: 44px; margin-bottom: 8px; }
+.info-note {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  text-align: left;
+}

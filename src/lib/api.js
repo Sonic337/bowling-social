@@ -36,6 +36,9 @@ export const submitForm = (data) =>
 
 export const getMyProfile = () => apiFetch('/me/profile');
 
+export const getGuestProfile = (id, key) =>
+  apiFetch(`/profile/${id}?key=${encodeURIComponent(key)}`);
+
 export const getUsers = (params = {}) =>
   apiFetch('/admin/users?' + new URLSearchParams(params));
 

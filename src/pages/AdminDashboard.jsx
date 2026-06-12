@@ -126,7 +126,7 @@ export default function AdminDashboard() {
                 <thead><tr>
                   <th></th>
                   <th>Name</th><th>Age</th><th>Gender</th><th>Area</th>
-                  <th>WhatsApp</th><th>Availability</th><th>Joined</th>
+                  <th>WhatsApp</th><th>Email</th><th>Availability</th><th>Joined</th>
                 </tr></thead>
                 <tbody>
                   {users.map(u => (
@@ -137,11 +137,12 @@ export default function AdminDashboard() {
                       <td>{u.gender}</td>
                       <td>{u.area}</td>
                       <td>{u.whatsapp}</td>
+                      <td style={{ fontSize:12 }}>{u.email || '—'}</td>
                       <td><AvailDots availability={u.availability} /></td>
                       <td style={{ fontSize:12, color:'var(--text-2)' }}>{new Date(u.created_at).toLocaleDateString()}</td>
                     </tr>
                   ))}
-                  {!users.length && <tr><td colSpan={8} style={{ textAlign:'center', color:'var(--text-2)', padding:32 }}>No users found</td></tr>}
+                  {!users.length && <tr><td colSpan={9} style={{ textAlign:'center', color:'var(--text-2)', padding:32 }}>No users found</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -230,7 +231,7 @@ export default function AdminDashboard() {
                 <input placeholder="e.g. 6:00 PM – 8:00 PM" value={sessionForm.time_slot}
                   onChange={e => setSessionForm(f => ({...f, time_slot: e.target.value}))} required /></div>
               <div className="field"><label>Bowling Alley *</label>
-                <input placeholder="e.g. Smaaash, Lower Parel" value={sessionForm.alley_name}
+                <input placeholder="e.g. Smaaash, Phoenix Mall, Viman Nagar" value={sessionForm.alley_name}
                   onChange={e => setSessionForm(f => ({...f, alley_name: e.target.value}))} required /></div>
               <div className="field"><label>Lane Count</label>
                 <input type="number" min={1} value={sessionForm.lane_count}
