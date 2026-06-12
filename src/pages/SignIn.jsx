@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../lib/api';
-import Logo from '../components/Logo';
+import { LogoStacked } from '../components/Logo';
 
 export default function SignIn() {
   const nav = useNavigate();
@@ -40,7 +40,7 @@ export default function SignIn() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <Logo height={86} style={{ display:"block", margin:"0 auto 18px" }} />
+        <LogoStacked />
         <h1>Welcome Back</h1>
         <p className="auth-sub">Meet new people in Pune over a game of bowling.</p>
         <form onSubmit={handleSubmit}>

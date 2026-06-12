@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { submitForm, getMyProfile, getGuestProfile } from '../lib/api';
 import { PUNE_AREAS } from '../lib/areas';
-import Logo from '../components/Logo';
+import Logo, { LogoStacked } from '../components/Logo';
 import ThemeToggle from '../components/ThemeToggle';
 
 const DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
@@ -95,7 +95,7 @@ export default function IntakeForm() {
   if (submitted) return (
     <div className="auth-page">
       <div className="auth-card" style={{ maxWidth: 460, textAlign: 'center' }}>
-        <Logo height={86} style={{ display:"block", margin:"0 auto 18px" }} />
+        <LogoStacked />
         <div className="success-icon">🎳</div>
         <h1>You're in, {form.name.split(' ')[0]}!</h1>
         <p style={{ color: 'var(--text-muted)', marginBottom: 16 }}>
@@ -120,7 +120,7 @@ export default function IntakeForm() {
     <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '24px 16px 48px' }}>
       <div style={{ maxWidth: 640, margin: '0 auto' }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: 24 }}>
-          <Logo height={56} />
+          <Logo height={44} />
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <ThemeToggle />
             {isLoggedIn
@@ -141,7 +141,7 @@ export default function IntakeForm() {
             <h3 className="section-title">👤 About you</h3>
             <div className="field"><label>Full Name *</label>
               <input value={form.name} onChange={e => set('name', e.target.value)} required placeholder="Your name" /></div>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+            <div className="two-col" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
               <div className="field"><label>Age *</label>
                 <input type="number" min={16} max={80} value={form.age} onChange={e => set('age', e.target.value)} required placeholder="e.g. 25" /></div>
               <div className="field"><label>Gender *</label>

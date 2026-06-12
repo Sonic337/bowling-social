@@ -347,3 +347,13 @@ tr.selected { background: var(--accent-soft); }
 
 .page { min-height: 100vh; }
 .main { padding: 24px; max-width: 1300px; margin: 0 auto; }
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  body { font-size: 14px; }
+  .auth-card { padding: 28px 20px; border-radius: 14px; }
+  .card { padding: 18px 16px; }
+  .hero h1 { font-size: 23px; }
+  .two-col { grid-template-columns: 1fr !important; }
+  .filter-bar input, .filter-bar select { min-width: 120px; }
+}
