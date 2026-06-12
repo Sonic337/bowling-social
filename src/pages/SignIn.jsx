@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../lib/api';
-import logo from '../assets/logo.png';
+import Logo from '../components/Logo';
 
 export default function SignIn() {
   const nav = useNavigate();
@@ -40,7 +40,7 @@ export default function SignIn() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <img src={logo} alt="The Bowling Circle" className="auth-logo" />
+        <Logo height={86} style={{ display:"block", margin:"0 auto 18px" }} />
         <h1>Welcome Back</h1>
         <p className="auth-sub">Meet new people in Pune over a game of bowling.</p>
         <form onSubmit={handleSubmit}>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../lib/api';
-import logo from '../assets/logo.png';
+import Logo from '../components/Logo';
 
 export default function SignUp() {
   const nav = useNavigate();
@@ -36,7 +36,7 @@ export default function SignUp() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <img src={logo} alt="The Bowling Circle" className="auth-logo" />
+        <Logo height={86} style={{ display:"block", margin:"0 auto 18px" }} />
         <h1>Create Account</h1>
         <p className="auth-sub">An account keeps your profile synced across devices, so you never fill the form twice.</p>
         <form onSubmit={handleSubmit}>

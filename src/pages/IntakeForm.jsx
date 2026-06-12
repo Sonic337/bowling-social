@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { submitForm, getMyProfile, getGuestProfile } from '../lib/api';
 import { PUNE_AREAS } from '../lib/areas';
-import logo from '../assets/logo.png';
+import Logo from '../components/Logo';
+import ThemeToggle from '../components/ThemeToggle';
 
 const DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 const TIMES = ['morning','afternoon','evening','night'];
@@ -94,7 +95,7 @@ export default function IntakeForm() {
   if (submitted) return (
     <div className="auth-page">
       <div className="auth-card" style={{ maxWidth: 460, textAlign: 'center' }}>
-        <img src={logo} alt="The Bowling Circle" className="auth-logo" />
+        <Logo height={86} style={{ display:"block", margin:"0 auto 18px" }} />
         <div className="success-icon">🎳</div>
         <h1>You're in, {form.name.split(' ')[0]}!</h1>
         <p style={{ color: 'var(--text-muted)', marginBottom: 16 }}>
@@ -119,14 +120,17 @@ export default function IntakeForm() {
     <div style={{ minHeight: '100vh', background: 'var(--bg)', padding: '24px 16px 48px' }}>
       <div style={{ maxWidth: 640, margin: '0 auto' }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: 24 }}>
-          <img src={logo} alt="The Bowling Circle" style={{ height: 52 }} />
-          {isLoggedIn
-            ? <button className="btn" onClick={handleSignOut} style={{ fontSize: 13 }}>Sign Out</button>
-            : <a href="/login" style={{ fontSize: 13, color: 'var(--text-muted)', textDecoration: 'none' }}>Admin / Sign in</a>}
+          <Logo height={56} />
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <ThemeToggle />
+            {isLoggedIn
+              ? <button className="btn" onClick={handleSignOut} style={{ fontSize: 13 }}>Sign Out</button>
+              : <a href="/login" style={{ fontSize: 13, color: 'var(--text-muted)', textDecoration: 'none', fontWeight: 700 }}>Sign in</a>}
+          </div>
         </div>
 
         <div className="hero">
-          <h1>{hasExisting ? `Welcome back${form.name ? ', ' + form.name.split(' ')[0] : ''}!` : 'Join The Bowling Circle'}</h1>
+          <h1>{hasExisting ? `Welcome back${form.name ? ', ' + form.name.split(' ')[0] : ''}!` : <>Join <span className="accent">The Bowling Circle</span></>}</h1>
           <p>{hasExisting
             ? 'Your details are saved. Update anything below and resubmit.'
             : 'Meet new people in Pune over a game of bowling. Tell us about yourself and we\u2019ll match you into a group.'}</p>

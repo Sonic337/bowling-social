@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUsers, getSessions, createSession, getAccounts, setAccountRole } from '../lib/api';
-import logo from '../assets/logo.png';
+import Logo from '../components/Logo';
+import ThemeToggle from '../components/ThemeToggle';
 
-function AvailDots({ availability }) {
-  const days = ['mon','tue','wed','thu','fri','sat','sun'];
-  const full = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+function AvailChips({ availability }) {
+  const days = availability?.days || [];
+  if (!days.length) return <span style={{ color: 'var(--text-faint)', fontSize: 12 }}>—</span>;
   return (
-    <div className="avail-dots">
-      {days.map((d, i) => (
-        <span key={d} className={`dot ${(availability?.days || []).includes(full[i]) ? 'active' : ''}`} title={full[i]}>{d}</span>
-      ))}
+    <div className="day-chips">
+      {days.map(d => <span key={d} className="day-chip">{d.slice(0, 3)}</span>)}
     </div>
   );
 }
@@ -85,10 +84,11 @@ export default function AdminDashboard() {
   return (
     <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background:'var(--surface)', borderBottom:'1px solid var(--border)', padding:'12px 24px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-        <img src={logo} alt="The Bowling Circle" style={{ height:44 }} />
+      <div style={{ background:'var(--surface)', borderBottom:'1px solid var(--border)', boxShadow:'var(--shadow-sm)', padding:'12px 24px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+        <Logo height={46} />
         <div style={{ display:'flex', gap:8, alignItems:'center' }}>
-          <span style={{ fontSize:13, color:'var(--text-2)' }}>Admin</span>
+          <ThemeToggle />
+          <span style={{ fontSize:13, color:'var(--text-muted)', fontWeight:700 }}>Admin</span>
           <button className="btn" onClick={handleLogout} style={{ fontSize:12 }}>Sign Out</button>
         </div>
       </div>
@@ -138,11 +138,11 @@ export default function AdminDashboard() {
                       <td>{u.area}</td>
                       <td>{u.whatsapp}</td>
                       <td style={{ fontSize:12 }}>{u.email || '—'}</td>
-                      <td><AvailDots availability={u.availability} /></td>
-                      <td style={{ fontSize:12, color:'var(--text-2)' }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                      <td><AvailChips availability={u.availability} /></td>
+                      <td style={{ fontSize:12, color:'var(--text-muted)' }}>{new Date(u.created_at).toLocaleDateString()}</td>
                     </tr>
                   ))}
-                  {!users.length && <tr><td colSpan={9} style={{ textAlign:'center', color:'var(--text-2)', padding:32 }}>No users found</td></tr>}
+                  {!users.length && <tr><td colSpan={9} style={{ textAlign:'center', color:'var(--text-muted)', padding:32 }}>No users found</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
                     <td><span className="badge" style={{ background: statusColors[s.status] + '22', color: statusColors[s.status] }}>{s.status}</span></td>
                   </tr>
                 ))}
-                {!sessions.length && <tr><td colSpan={5} style={{ textAlign:'center', color:'var(--text-2)', padding:32 }}>No sessions yet</td></tr>}
+                {!sessions.length && <tr><td colSpan={5} style={{ textAlign:'center', color:'var(--text-muted)', padding:32 }}>No sessions yet</td></tr>}
               </tbody>
             </table>
           </div>
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
         {/* Access Tab */}
         {tab === 'access' && (
           <>
-            <p style={{ color:'var(--text-2)', marginBottom:16, fontSize:14 }}>
+            <p style={{ color:'var(--text-muted)', marginBottom:16, fontSize:14 }}>
               Toggle admin access for any registered account. Admins can view and manage all users and sessions.
             </p>
             <div className="table-wrap">
@@ -203,7 +203,7 @@ export default function AdminDashboard() {
                           color: a.role === 'admin' ? '#6366f1' : '#f59e0b'
                         }}>{a.role}</span>
                       </td>
-                      <td style={{ fontSize:12, color:'var(--text-2)' }}>{new Date(a.created_at).toLocaleDateString()}</td>
+                      <td style={{ fontSize:12, color:'var(--text-muted)' }}>{new Date(a.created_at).toLocaleDateString()}</td>
                       <td>
                         <button className="btn" style={{ fontSize:12 }} onClick={() => toggleRole(a)}>
                           {a.role === 'admin' ? 'Revoke Admin' : 'Grant Admin'}
@@ -211,7 +211,7 @@ export default function AdminDashboard() {
                       </td>
                     </tr>
                   ))}
-                  {!accounts.length && <tr><td colSpan={4} style={{ textAlign:'center', color:'var(--text-2)', padding:32 }}>No accounts yet</td></tr>}
+                  {!accounts.length && <tr><td colSpan={4} style={{ textAlign:'center', color:'var(--text-muted)', padding:32 }}>No accounts yet</td></tr>}
                 </tbody>
               </table>
             </div>
