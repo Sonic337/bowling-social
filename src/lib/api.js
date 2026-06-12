@@ -42,6 +42,9 @@ export const getGuestProfile = (id, key) =>
 export const getUsers = (params = {}) =>
   apiFetch('/admin/users?' + new URLSearchParams(params));
 
+export const deleteUser = (id) =>
+  apiFetch(`/admin/users/${id}`, { method: 'DELETE' });
+
 export const getAccounts = () => apiFetch('/admin/accounts');
 
 export const setAccountRole = (id, role) =>

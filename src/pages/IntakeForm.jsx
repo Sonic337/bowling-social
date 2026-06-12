@@ -6,8 +6,11 @@ import Logo, { LogoStacked } from '../components/Logo';
 import ThemeToggle from '../components/ThemeToggle';
 
 const DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
-const TIMES = ['morning','afternoon','evening','night'];
-const SIZES = ['small (2-4)','medium (5-8)','large (9+)','any'];
+const TIMES = [
+  { value: 'afternoon', label: 'Afternoon — 12 PM' },
+  { value: 'night', label: 'Night — 8 PM' },
+];
+const SIZES = ['2-3','4-5','5-6','any'];
 
 const EMPTY = {
   name:'', age:'', gender:'', area:'', whatsapp:'', email:'', occupation:'',
@@ -156,7 +159,7 @@ export default function IntakeForm() {
                 {PUNE_AREAS.map(a => <option key={a} value={a}>{a}</option>)}
               </select></div>
             <div className="field" style={{ marginBottom: 0 }}><label>Occupation</label>
-              <input value={form.occupation} onChange={e => set('occupation', e.target.value)} placeholder="What do you do?" /></div>
+              <input value={form.occupation} onChange={e => set('occupation', e.target.value)} placeholder="Student, engineer, between jobs — anything goes" /></div>
           </div>
 
           <div className="card form-section">
@@ -180,9 +183,9 @@ export default function IntakeForm() {
             <div className="field" style={{ marginBottom: 0 }}><label>Preferred Times</label>
               <div className="pill-row">
                 {TIMES.map(t => (
-                  <button type="button" key={t}
-                    className={`pill ${form.availability.times.includes(t) ? 'active' : ''}`}
-                    onClick={() => toggleAvail('times', t)}>{t}</button>
+                  <button type="button" key={t.value}
+                    className={`pill ${form.availability.times.includes(t.value) ? 'active' : ''}`}
+                    onClick={() => toggleAvail('times', t.value)}>{t.label}</button>
                 ))}</div></div>
           </div>
 

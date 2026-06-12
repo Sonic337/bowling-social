@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUsers, getSessions, createSession, getAccounts, setAccountRole } from '../lib/api';
+import { getUsers, getSessions, createSession, getAccounts, setAccountRole, deleteUser } from '../lib/api';
 import Logo from '../components/Logo';
 import ThemeToggle from '../components/ThemeToggle';
 
@@ -33,11 +33,13 @@ export default function AdminDashboard() {
   const [accounts, setAccounts] = useState([]);
   const [selected, setSelected] = useState([]);
   const [filters, setFilters] = useState({ gender:'', area:'', day:'' });
+  const [ageBands, setAgeBands] = useState([]);
+  const AGE_BANDS = ['16-20','21-24','25-28','29-34','35+'];
   const [showModal, setShowModal] = useState(false);
   const [sessionForm, setSessionForm] = useState({ date:'', time_slot:'', alley_name:'', lane_count:'' });
   const [error, setError] = useState('');
 
-  useEffect(() => { loadUsers(); }, [filters]);
+  useEffect(() => { loadUsers(); }, [filters, ageBands]);
   useEffect(() => { if (tab === 'sessions') loadSessions(); }, [tab]);
   useEffect(() => { if (tab === 'access') loadAccounts(); }, [tab]);
 
@@ -46,6 +48,7 @@ export default function AdminDashboard() {
     if (filters.gender) params.gender = filters.gender;
     if (filters.area) params.area = filters.area;
     if (filters.day) params.day = filters.day;
+    if (ageBands.length) params.ages = ageBands.join(',');
     setUsers(await getUsers(params));
   }
 
@@ -74,6 +77,15 @@ export default function AdminDashboard() {
     try {
       const updated = await setAccountRole(account.id, newRole);
       setAccounts(a => a.map(x => x.id === updated.id ? updated : x));
+    } catch (err) { alert(err.message); }
+  }
+
+  async function handleDelete(u) {
+    if (!window.confirm(`Delete ${u.name}, ${u.age}? This cannot be undone.`)) return;
+    try {
+      await deleteUser(u.id);
+      setUsers(list => list.filter(x => x.id !== u.id));
+      setSelected(s => s.filter(id => id !== u.id));
     } catch (err) { alert(err.message); }
   }
 
@@ -118,7 +130,17 @@ export default function AdminDashboard() {
                   <option key={d} value={d} style={{ textTransform:'capitalize' }}>{d}</option>
                 ))}
               </select>
-              <button className="btn" onClick={() => setFilters({ gender:'', area:'', day:'' })}>Clear</button>
+              <button className="btn" onClick={() => { setFilters({ gender:'', area:'', day:'' }); setAgeBands([]); }}>Clear</button>
+              <div className="pill-row" style={{ width:'100%', marginTop:4 }}>
+                {AGE_BANDS.map(b => (
+                  <button type="button" key={b}
+                    className={`pill ${ageBands.includes(b) ? 'active' : ''}`}
+                    style={{ fontSize:12, padding:'5px 12px' }}
+                    onClick={() => setAgeBands(a => a.includes(b) ? a.filter(x => x !== b) : [...a, b])}>
+                    {b} yrs
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="table-wrap">
@@ -126,7 +148,7 @@ export default function AdminDashboard() {
                 <thead><tr>
                   <th></th>
                   <th>Name</th><th>Age</th><th>Gender</th><th>Area</th>
-                  <th>WhatsApp</th><th>Email</th><th>Availability</th><th>Joined</th>
+                  <th>WhatsApp</th><th>Email</th><th>Availability</th><th>Joined</th><th></th>
                 </tr></thead>
                 <tbody>
                   {users.map(u => (
@@ -140,9 +162,12 @@ export default function AdminDashboard() {
                       <td style={{ fontSize:12 }}>{u.email || '—'}</td>
                       <td><AvailChips availability={u.availability} /></td>
                       <td style={{ fontSize:12, color:'var(--text-muted)' }}>{new Date(u.created_at).toLocaleDateString()}</td>
+                      <td><button className="btn" title="Delete entry"
+                        style={{ fontSize:12, padding:'3px 9px', color:'var(--danger)' }}
+                        onClick={() => handleDelete(u)}>✕</button></td>
                     </tr>
                   ))}
-                  {!users.length && <tr><td colSpan={9} style={{ textAlign:'center', color:'var(--text-muted)', padding:32 }}>No users found</td></tr>}
+                  {!users.length && <tr><td colSpan={10} style={{ textAlign:'center', color:'var(--text-muted)', padding:32 }}>No users found</td></tr>}
                 </tbody>
               </table>
             </div>

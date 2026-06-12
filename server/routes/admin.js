@@ -16,6 +16,23 @@ router.get('/users', async (req, res) => {
     if (gender) { conditions.push(`gender = $${values.length + 1}`); values.push(gender); }
     if (area) { conditions.push(`area ILIKE $${values.length + 1}`); values.push(`%${area}%`); }
     if (day) { conditions.push(`availability->'days' @> $${values.length + 1}::jsonb`); values.push(JSON.stringify([day])); }
+    if (req.query.ages) {
+      const bands = String(req.query.ages).split(',').map(b => b.trim()).filter(Boolean);
+      const clauses = [];
+      for (const band of bands) {
+        if (band.endsWith('+')) {
+          const min = parseInt(band);
+          if (!isNaN(min)) { clauses.push(`age >= $${values.length + 1}`); values.push(min); }
+        } else {
+          const [lo, hi] = band.split('-').map(Number);
+          if (!isNaN(lo) && !isNaN(hi)) {
+            clauses.push(`(age BETWEEN $${values.length + 1} AND $${values.length + 2})`);
+            values.push(lo, hi);
+          }
+        }
+      }
+      if (clauses.length) conditions.push('(' + clauses.join(' OR ') + ')');
+    }
     const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
     const { rows } = await pool.query(`SELECT * FROM users ${where} ORDER BY ${col} ${dir}`, values);
     res.json(rows);
@@ -118,6 +135,15 @@ router.patch('/sessions/:id', async (req, res) => {
     if (!rows[0]) return res.status(404).json({ error: 'Not found' });
     res.json(rows[0]);
   } catch (err) { res.status(500).json({ error: 'Server error' }); }
+});
+
+// DELETE /api/admin/users/:id — permanent
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const { rowCount } = await pool.query('DELETE FROM users WHERE id = $1', [req.params.id]);
+    if (!rowCount) return res.status(404).json({ error: 'Not found' });
+    res.json({ success: true });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });
 
 module.exports = router;
