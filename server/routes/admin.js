@@ -16,6 +16,11 @@ router.get('/users', async (req, res) => {
     if (gender) { conditions.push(`gender = $${values.length + 1}`); values.push(gender); }
     if (area) { conditions.push(`area ILIKE $${values.length + 1}`); values.push(`%${area}%`); }
     if (day) { conditions.push(`availability->'days' @> $${values.length + 1}::jsonb`); values.push(JSON.stringify([day])); }
+    const search = req.query.search ? String(req.query.search).trim() : '';
+    if (search) {
+      conditions.push(`(LOWER(u.name) LIKE $${values.length + 1} OR LOWER(u.email) LIKE $${values.length + 1} OR u.whatsapp LIKE $${values.length + 1})`);
+      values.push(`%${search.toLowerCase()}%`);
+    }
     if (req.query.ages) {
       const bands = String(req.query.ages).split(',').map(b => b.trim()).filter(Boolean);
       const clauses = [];
@@ -142,6 +147,19 @@ router.delete('/users/:id', async (req, res) => {
   try {
     const { rowCount } = await pool.query('DELETE FROM users WHERE id = $1', [req.params.id]);
     if (!rowCount) return res.status(404).json({ error: 'Not found' });
+    res.json({ success: true });
+  } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
+});
+
+// PATCH /api/admin/accounts/:id/password — admin resets a specific account's password
+router.patch('/accounts/:id/password', async (req, res) => {
+  const { password } = req.body;
+  if (!password || password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' });
+  try {
+    const bcrypt = require('bcryptjs');
+    const hash = await bcrypt.hash(password, 10);
+    const { rowCount } = await pool.query('UPDATE accounts SET password_hash=$1 WHERE id=$2', [hash, req.params.id]);
+    if (!rowCount) return res.status(404).json({ error: 'Account not found' });
     res.json({ success: true });
   } catch (err) { console.error(err); res.status(500).json({ error: 'Server error' }); }
 });

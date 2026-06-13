@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUsers, getSessions, createSession, getAccounts, setAccountRole, deleteUser } from '../lib/api';
+import { getUsers, getSessions, createSession, getAccounts, setAccountRole, deleteUser, resetAccountPassword } from '../lib/api';
 import Logo from '../components/Logo';
 import ThemeToggle from '../components/ThemeToggle';
 
@@ -13,6 +13,7 @@ function AvailChips({ availability }) {
     </div>
   );
 }
+
 
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
@@ -33,13 +34,14 @@ export default function AdminDashboard() {
   const [accounts, setAccounts] = useState([]);
   const [selected, setSelected] = useState([]);
   const [filters, setFilters] = useState({ gender:'', area:'', day:'' });
+  const [search, setSearch] = useState('');
   const [ageBands, setAgeBands] = useState([]);
   const AGE_BANDS = ['16-20','21-24','25-28','29-34','35+'];
   const [showModal, setShowModal] = useState(false);
   const [sessionForm, setSessionForm] = useState({ date:'', time_slot:'', alley_name:'', lane_count:'' });
   const [error, setError] = useState('');
 
-  useEffect(() => { loadUsers(); }, [filters, ageBands]);
+  useEffect(() => { loadUsers(); }, [filters, ageBands, search]);
   useEffect(() => { if (tab === 'sessions') loadSessions(); }, [tab]);
   useEffect(() => { if (tab === 'access') loadAccounts(); }, [tab]);
 
@@ -49,6 +51,7 @@ export default function AdminDashboard() {
     if (filters.area) params.area = filters.area;
     if (filters.day) params.day = filters.day;
     if (ageBands.length) params.ages = ageBands.join(',');
+    if (search.trim()) params.search = search.trim();
     setUsers(await getUsers(params));
   }
 
@@ -78,6 +81,21 @@ export default function AdminDashboard() {
       const updated = await setAccountRole(account.id, newRole);
       setAccounts(a => a.map(x => x.id === updated.id ? updated : x));
     } catch (err) { alert(err.message); }
+  }
+
+  const [resetModal, setResetModal] = useState(null); // { id, email }
+  const [newPwd, setNewPwd] = useState('');
+  const [pwdSaving, setPwdSaving] = useState(false);
+  const [pwdError, setPwdError] = useState('');
+
+  async function handlePasswordReset(e) {
+    e.preventDefault(); setPwdError(''); setPwdSaving(true);
+    try {
+      await resetAccountPassword(resetModal.id, newPwd);
+      setResetModal(null); setNewPwd('');
+      alert('Password updated successfully.');
+    } catch(err) { setPwdError(err.message); }
+    finally { setPwdSaving(false); }
   }
 
   async function handleDelete(u) {
@@ -130,7 +148,13 @@ export default function AdminDashboard() {
                   <option key={d} value={d} style={{ textTransform:'capitalize' }}>{d}</option>
                 ))}
               </select>
-              <button className="btn" onClick={() => { setFilters({ gender:'', area:'', day:'' }); setAgeBands([]); }}>Clear</button>
+              <button className="btn" onClick={() => { setFilters({ gender:'', area:'', day:'' }); setAgeBands([]); setSearch(''); }}>Clear</button>
+              <input
+                placeholder="Search name, email, WhatsApp…"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                style={{ width:'100%', marginTop:4 }}
+              />
               <div className="pill-row" style={{ width:'100%', marginTop:4 }}>
                 {AGE_BANDS.map(b => (
                   <button type="button" key={b}
@@ -265,6 +289,32 @@ export default function AdminDashboard() {
               <div style={{ display:'flex', gap:8, justifyContent:'flex-end', marginTop:16 }}>
                 <button type="button" className="btn" onClick={() => setShowModal(false)}>Cancel</button>
                 <button type="submit" className="btn btn-primary">Create</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Password reset modal */}
+      {resetModal && (
+        <div className="modal-overlay" onClick={() => setResetModal(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h3>Reset Password</h3>
+            <p style={{ fontSize:14, color:'var(--text-muted)', marginBottom:16 }}>
+              Setting a new password for <strong>{resetModal.email}</strong>
+            </p>
+            <form onSubmit={handlePasswordReset}>
+              <div className="field">
+                <label>New Password</label>
+                <input type="password" value={newPwd} onChange={e => setNewPwd(e.target.value)}
+                  required minLength={6} autoFocus placeholder="Min 6 characters" />
+              </div>
+              {pwdError && <p className="form-error">{pwdError}</p>}
+              <div style={{ display:'flex', gap:10, justifyContent:'flex-end', marginTop:8 }}>
+                <button type="button" className="btn" onClick={() => setResetModal(null)}>Cancel</button>
+                <button type="submit" className="btn btn-primary" disabled={pwdSaving}>
+                  {pwdSaving ? 'Saving…' : 'Update Password'}
+                </button>
               </div>
             </form>
           </div>

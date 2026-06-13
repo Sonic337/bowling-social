@@ -46,3 +46,15 @@ CREATE TABLE IF NOT EXISTS session_members (
   user_id     INTEGER REFERENCES users(id)    ON DELETE CASCADE,
   PRIMARY KEY (session_id, user_id)
 );
+
+-- OTP table for password reset
+CREATE TABLE IF NOT EXISTS password_reset_otps (
+  id         SERIAL PRIMARY KEY,
+  email      VARCHAR(255) NOT NULL,
+  otp_hash   VARCHAR(255) NOT NULL,
+  expires_at TIMESTAMPTZ  NOT NULL,
+  used       BOOLEAN      DEFAULT FALSE,
+  created_at TIMESTAMPTZ  DEFAULT NOW()
+);
+-- Clean up expired OTPs automatically via index
+CREATE INDEX IF NOT EXISTS otp_email_idx ON password_reset_otps (email);

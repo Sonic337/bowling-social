@@ -45,6 +45,9 @@ export const getUsers = (params = {}) =>
 export const deleteUser = (id) =>
   apiFetch(`/admin/users/${id}`, { method: 'DELETE' });
 
+export const resetAccountPassword = (id, password) =>
+  apiFetch(`/admin/accounts/${id}/password`, { method: 'PATCH', body: JSON.stringify({ password }) });
+
 export const getAccounts = () => apiFetch('/admin/accounts');
 
 export const setAccountRole = (id, role) =>

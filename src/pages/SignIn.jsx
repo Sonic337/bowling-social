@@ -53,6 +53,7 @@ export default function SignIn() {
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
           {error && <p className="form-error">{error}</p>}
+          <div style={{ textAlign:'right', marginBottom:8 }}><Link to="/forgot-password" style={{ fontSize:13, color:'var(--text-muted)' }}>Forgot password?</Link></div>
           <button className="btn btn-primary" type="submit" disabled={loading} style={{ width: '100%' }}>
             {loading ? 'Signing in…' : 'Sign In'}
           </button>

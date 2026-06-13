@@ -4,6 +4,7 @@ import SignIn from './pages/SignIn';
 import IntakeForm from './pages/IntakeForm';
 import AdminDashboard from './pages/AdminDashboard';
 import SessionDetail from './pages/SessionDetail';
+import ForgotPassword from './pages/ForgotPassword';
 
 function AdminRoute({ children }) {
   const token = localStorage.getItem('token');
@@ -30,6 +31,7 @@ export default function App() {
       <Routes>
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login"  element={<SignIn />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/" element={
           <FormGate><IntakeForm /></FormGate>
         } />
