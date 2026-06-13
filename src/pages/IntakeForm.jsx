@@ -20,11 +20,14 @@ const EMPTY = {
 
 // ── Input sanitizers ──
 const sanitize = {
-  name:    v => v.replace(/[^a-zA-Z\u0900-\u097F\s'-]/g, ''),
-  digits:  v => v.replace(/[^0-9]/g, ''),
-  phone:   v => v.replace(/[^0-9+]/g, '').replace(/(?!^)\+/g, ''),
-  text:    v => v.replace(/[<>{}[\]\\]/g, ''),
-  free:    v => v.replace(/[<>{}[\]\\]/g, ''),
+  // names: letters (Latin + Devanagari), spaces, hyphen, apostrophe
+  name:  v => v.replace(/[^a-zA-Z\u0900-\u097F\s'\-]/g, ''),
+  // phone: digits only, one leading + allowed
+  phone: v => { const clean = v.replace(/[^0-9+]/g, ''); return clean.startsWith('+') ? '+' + clean.slice(1).replace(/\+/g,'') : clean.replace(/\+/g,''); },
+  // general text: letters, digits, spaces, . , - ' ( ) & — no @ # $ ! % ^ * etc.
+  text:  v => v.replace(/[^a-zA-Z0-9\u0900-\u097F\s.,\-'()&]/g, ''),
+  // bio: same but also allow ? ! and newlines
+  free:  v => v.replace(/[^a-zA-Z0-9\u0900-\u097F\s.,\-'()&?!\n]/g, ''),
 };
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 function validEmail(v) { return EMAIL_RE.test(String(v).trim()); }
