@@ -17,6 +17,18 @@ const EMPTY = {
   interests:'', bio:'', group_size_pref:'', availability:{ days:[], times:[] }
 };
 
+
+// ── Input sanitizers ──
+const sanitize = {
+  name:    v => v.replace(/[^a-zA-Z\u0900-\u097F\s'-]/g, ''),
+  digits:  v => v.replace(/[^0-9]/g, ''),
+  phone:   v => v.replace(/[^0-9+]/g, '').replace(/(?!^)\+/g, ''),
+  text:    v => v.replace(/[<>{}[\]\\]/g, ''),
+  free:    v => v.replace(/[<>{}[\]\\]/g, ''),
+};
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+function validEmail(v) { return EMAIL_RE.test(String(v).trim()); }
+
 function profileToForm(p) {
   return {
     name: p.name || '', age: p.age || '', gender: p.gender || '', area: p.area || '',
@@ -32,6 +44,7 @@ export default function IntakeForm() {
   const [submitted, setSubmitted] = useState(false);
   const [hasExisting, setHasExisting] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState(EMPTY);
   const isLoggedIn = !!localStorage.getItem('token');
@@ -143,7 +156,7 @@ export default function IntakeForm() {
           <div className="card form-section">
             <h3 className="section-title">👤 About you</h3>
             <div className="field"><label>Full Name *</label>
-              <input value={form.name} onChange={e => set('name', e.target.value)} required placeholder="Your name" /></div>
+              <input value={form.name} onChange={e => set('name', sanitize.name(e.target.value))} required placeholder="Your name" /></div>
             <div className="two-col" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
               <div className="field"><label>Age *</label>
                 <input type="number" min={16} max={80} value={form.age} onChange={e => set('age', e.target.value)} required placeholder="e.g. 25" /></div>
@@ -159,16 +172,17 @@ export default function IntakeForm() {
                 {PUNE_AREAS.map(a => <option key={a} value={a}>{a}</option>)}
               </select></div>
             <div className="field" style={{ marginBottom: 0 }}><label>Occupation</label>
-              <input value={form.occupation} onChange={e => set('occupation', e.target.value)} placeholder="Student, engineer, between jobs — anything goes" /></div>
+              <input value={form.occupation} onChange={e => set('occupation', sanitize.text(e.target.value))} placeholder="Student, engineer, between jobs — anything goes" /></div>
           </div>
 
           <div className="card form-section">
             <h3 className="section-title">📱 Contact</h3>
             <div className="field"><label>WhatsApp Number *</label>
-              <input type="tel" value={form.whatsapp} onChange={e => set('whatsapp', e.target.value)} required placeholder="98XXXXXXXX" /></div>
+              <input type="tel" value={form.whatsapp} onChange={e => set('whatsapp', sanitize.phone(e.target.value))} required placeholder="98XXXXXXXX" inputMode="tel" /></div>
             <div className="field" style={{ marginBottom: 0 }}><label>Email *</label>
-              <input type="email" value={form.email} onChange={e => set('email', e.target.value)} required placeholder="you@example.com" />
-              <span className="field-hint">We use this to save your spot and send session details.</span></div>
+              <input type="email" value={form.email} onChange={e => set('email', e.target.value.replace(/\s/g,''))} onBlur={() => setEmailTouched(true)} required placeholder="you@example.com" autoComplete="email" />
+              <span className="field-hint">We use this to save your spot and send session details.</span>
+              {emailTouched && form.email && !validEmail(form.email) && <span className="field-hint" style={{color:'var(--danger)'}}>Enter a valid email like you@example.com</span>}</div>
           </div>
 
           <div className="card form-section">
@@ -199,13 +213,13 @@ export default function IntakeForm() {
                     onClick={() => set('group_size_pref', s)}>{s}</button>
                 ))}</div></div>
             <div className="field"><label>Interests / Hobbies</label>
-              <input value={form.interests} onChange={e => set('interests', e.target.value)} placeholder="Music, trekking, food…" /></div>
+              <input value={form.interests} onChange={e => set('interests', sanitize.text(e.target.value))} placeholder="Music, trekking, food…" /></div>
             <div className="field" style={{ marginBottom: 0 }}><label>Anything else to know about you?</label>
-              <textarea value={form.bio} onChange={e => set('bio', e.target.value)} rows={3} placeholder="Optional" /></div>
+              <textarea value={form.bio} onChange={e => set('bio', sanitize.free(e.target.value))} rows={3} placeholder="Optional" /></div>
           </div>
 
           {error && <p className="form-error">{error}</p>}
-          <button className="btn btn-primary btn-lg" type="submit" disabled={saving} style={{ width:'100%' }}>
+          <button className="btn btn-primary btn-lg" type="submit" disabled={saving || (form.email && !validEmail(form.email))} style={{ width:'100%' }}>
             {saving ? 'Saving…' : hasExisting ? 'Update my details' : 'Count me in 🎳'}
           </button>
           <p style={{ fontSize: 12, color: 'var(--text-faint)', textAlign: 'center', marginTop: 12 }}>
