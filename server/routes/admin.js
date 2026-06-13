@@ -18,7 +18,7 @@ router.get('/users', async (req, res) => {
     if (day) { conditions.push(`availability->'days' @> $${values.length + 1}::jsonb`); values.push(JSON.stringify([day])); }
     const search = req.query.search ? String(req.query.search).trim() : '';
     if (search) {
-      conditions.push(`(LOWER(u.name) LIKE $${values.length + 1} OR LOWER(u.email) LIKE $${values.length + 1} OR u.whatsapp LIKE $${values.length + 1})`);
+      conditions.push(`(LOWER(name) LIKE $${values.length + 1} OR LOWER(email) LIKE $${values.length + 1} OR whatsapp LIKE $${values.length + 1})`);
       values.push(`%${search.toLowerCase()}%`);
     }
     if (req.query.ages) {
